@@ -1,7 +1,8 @@
-import { CONST, rpc, sc, u } from "@cityofzion/neon-core";
+import { CONST, rpc, sc, u, wallet } from "@cityofzion/neon-core";
 import { CONNECTOR_ADDRESS } from "constants/connector-address";
 import { getRPCClient } from "env";
 import { flatMap, range } from "lodash";
+import { append } from "queue";
 import { BridgeMessageSent } from "types/BridgeMessageSent";
 import { littleEndianToBigEndian } from "utils/index";
 import { base64ToAddress, base64ToScriptHash } from "utils/tool/util/convert";
@@ -15,7 +16,7 @@ export async function watchNeo() {
     const currentBlockNumber = await rpcClient.getBlockCount();
     for (const i of range(startBlockNumber, currentBlockNumber)) {
       const notifications = await fetchNotifications(i);
-      console.log(notifications);
+      append(notifications);
     }
     return currentBlockNumber;
   });
@@ -43,8 +44,8 @@ function toDTO(state: sc.StackItemJson): BridgeMessageSent {
   const res = makeResult(state);
   return {
     sourceChainId: CONST.MAGIC_NUMBER.TestNet,
-    txOriginAddress: res.getAddress(0),
-    txSenderAddress: res.getAddress(1),
+    txOriginAddress: wallet.getScriptHashFromAddress(res.getAddress(0)),
+    txSenderAddress: wallet.getScriptHashFromAddress(res.getAddress(1)),
     destinationChainId: res.getBigInteger(2),
     destinationAddress: `0x${res.getHex(3)}`,
     destinationGasLimit: res.getBigInteger(4),
@@ -75,18 +76,3 @@ function makeResult<T>(data: sc.StackItemJson) {
     getHex,
   };
 }
-
-// async function test(bridge: DeployedContract) {
-//   await bridge.contract.invoke("send", [
-//     { type: "Hash160", value: "5452b3c46e756E8bcF482Ee6490dDcB9f5Ef83Df" },
-//     2970385,
-//     {
-//       type: "Hash160",
-//       value: bigEndianToLittleEndian(
-//         "5452b3c46e756E8bcF482Ee6490dDcB9f5Ef83Df".padStart(64, "0")
-//       ).substring(0, 40),
-//     },
-//     12,
-//     100000,
-//   ]);
-// }

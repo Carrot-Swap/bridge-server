@@ -13,8 +13,8 @@ const CHAIN_NAME_BY_ID = {
   7001: "zeta",
 };
 
-export function append(data: BridgeMessageSent) {
-  list.push(data);
+export function append(data: BridgeMessageSent[]) {
+  list.push(...data);
 }
 
 export async function startDispatcher() {
@@ -25,7 +25,14 @@ export async function startDispatcher() {
       const signer = getSigner(url, name, chainId);
       const address = CONNECTOR_ADDRESS[chainName];
       const connector = new ethers.Contract(address, abi, signer);
-      console.log("send message", item.txSenderAddress, item.sourceChainId);
+      console.log(
+        "send message",
+        item.txSenderAddress,
+        item.sourceChainId,
+        item.destinationAddress,
+        item.message,
+        item.bridgeParams
+      );
       const tx = await connector.onReceive(
         item.txSenderAddress,
         item.sourceChainId,
