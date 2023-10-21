@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "lib": ["es2017"],
+    "module": "commonjs",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "target": "es2017",
+    "outDir": "dist",
+    "baseUrl": "src",
+    "skipLibCheck": true,
+    "paths": {
+      "constants/*": ["constants/*"],
+      "remotes/*": ["remotes/*"],
+      "models/*": ["models/*"],
+      "parts/*": ["parts/*"],
+      "entites/*": ["entites/*"],
+      "utils/*": ["utils/*"]
+    }
+  }
+}
