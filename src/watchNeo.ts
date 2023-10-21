@@ -1,11 +1,11 @@
-import { rpc, sc, u } from "@cityofzion/neon-core";
+import { CONST, rpc, sc, u } from "@cityofzion/neon-core";
 import { CONNECTOR_ADDRESS } from "constants/connector-address";
 import { getRPCClient } from "env";
 import { flatMap, range } from "lodash";
-import { watch } from "utls/watch";
 import { BridgeMessageSent } from "types/BridgeMessageSent";
-import { littleEndianToBigEndian } from "utls";
-import { base64ToAddress, base64ToScriptHash } from "utls/tool/util/convert";
+import { littleEndianToBigEndian } from "utils/index";
+import { base64ToAddress, base64ToScriptHash } from "utils/tool/util/convert";
+import { watch } from "utils/watch";
 
 export async function watchNeo() {
   const rpcClient = getRPCClient();
@@ -42,12 +42,13 @@ async function fetchNotifications(i: number) {
 function toDTO(state: sc.StackItemJson): BridgeMessageSent {
   const res = makeResult(state);
   return {
+    sourceChainId: CONST.MAGIC_NUMBER.TestNet,
     txOriginAddress: res.getAddress(0),
     txSenderAddress: res.getAddress(1),
     destinationChainId: res.getBigInteger(2),
     destinationAddress: `0x${res.getHex(3)}`,
     destinationGasLimit: res.getBigInteger(4),
-    message: res.getHex(5),
+    message: res.getHex(5, true),
     bridgeParams: res.getHex(6),
   };
 }
@@ -74,3 +75,18 @@ function makeResult<T>(data: sc.StackItemJson) {
     getHex,
   };
 }
+
+// async function test(bridge: DeployedContract) {
+//   await bridge.contract.invoke("send", [
+//     { type: "Hash160", value: "5452b3c46e756E8bcF482Ee6490dDcB9f5Ef83Df" },
+//     2970385,
+//     {
+//       type: "Hash160",
+//       value: bigEndianToLittleEndian(
+//         "5452b3c46e756E8bcF482Ee6490dDcB9f5Ef83Df".padStart(64, "0")
+//       ).substring(0, 40),
+//     },
+//     12,
+//     100000,
+//   ]);
+// }

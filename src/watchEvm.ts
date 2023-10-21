@@ -1,6 +1,6 @@
 import { CONNECTOR_ADDRESS } from "constants/connector-address";
 import { ethers } from "ethers";
-import { watch } from "utls/watch";
+import { watch } from "utils/watch";
 import { NETWORKS } from "./constants/networks";
 
 export async function watchEvm(network: keyof typeof NETWORKS) {

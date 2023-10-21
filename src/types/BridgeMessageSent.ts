@@ -1,4 +1,5 @@
 export interface BridgeMessageSent {
+  sourceChainId: number;
   txOriginAddress: string;
   txSenderAddress: string;
   destinationChainId: string;
