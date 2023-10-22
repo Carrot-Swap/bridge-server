@@ -4,7 +4,7 @@ require("dotenv").config({ path: path.join(__dirname, ".env") });
 module.exports = [
   {
     script: "dist/index.js",
-    name: "price-oracle-node",
+    name: "bridge-relayer",
     env: {
       PRIVATE_KEY: process.env.PRIVATE_KEY,
       MANAGER_SERVER: process.env.MANAGER_SERVER,
