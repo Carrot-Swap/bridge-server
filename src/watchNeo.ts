@@ -50,7 +50,7 @@ function toDTO(state: sc.StackItemJson): BridgeMessage {
       res.getAddress(3)
     )}`,
     destinationGasLimit: res.getBigInteger(4),
-    message: res.getHex(5, true),
+    message: `0x${res.getHex(5, true)}`,
     bridgeParams: res.getHex(6),
   };
 }

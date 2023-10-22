@@ -1,20 +1,56 @@
+import { CONNECTOR_ABI } from "abis";
 import { CONNECTOR_ADDRESS } from "constants/connector-address";
 import { ethers } from "ethers";
+import { append } from "queue";
+import { BridgeMessage } from "types/BridgeMessage";
 import { watch } from "utils/watch";
 import { NETWORKS } from "./constants/networks";
+
+const SENT_EVENT =
+  "0x5b597f6fee9cb6d502de7253fc9d6cd9ca476deb484015b3026c58efbb350b1b";
 
 export async function watchEvm(network: keyof typeof NETWORKS) {
   const [url, name, chainId] = NETWORKS[network];
   await watch(network, async (startBlockNumber) => {
     const provider = new ethers.JsonRpcProvider(url, { name, chainId });
+    const contract = new ethers.Contract(
+      CONNECTOR_ADDRESS[network],
+      CONNECTOR_ABI
+    );
     const currentBlock = await provider.getBlockNumber();
     const logs = await provider.getLogs({
       fromBlock: startBlockNumber,
       toBlock: currentBlock,
       address: [CONNECTOR_ADDRESS[network]],
+      topics: [SENT_EVENT],
     });
-    console.log(logs);
+    const res: BridgeMessage[] = logs.map((log) => {
+      const [
+        sourceTxOriginAddress,
+        bridgeTxSenderAddress,
+        destinationChainId,
+        destinationAddress,
+        destinationGasLimit,
+        message,
+        bridgeParams,
+      ] = contract.interface.decodeEventLog(
+        "BridgeMessageSent",
+        log.data,
+        log.topics
+      );
 
-    return startBlockNumber;
+      return {
+        sourceChainId: chainId,
+        txOriginAddress: sourceTxOriginAddress,
+        txSenderAddress: bridgeTxSenderAddress,
+        destinationChainId: destinationChainId,
+        destinationAddress: destinationAddress,
+        destinationGasLimit: destinationGasLimit,
+        message: message,
+        bridgeParams: bridgeParams,
+      };
+    });
+    append(res);
+    return currentBlock;
   });
 }
