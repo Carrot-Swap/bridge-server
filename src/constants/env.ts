@@ -12,7 +12,7 @@ export function getSigner(url: string, name: string, chainId: number) {
     return instances[chainId];
   }
   const provider = new ethers.JsonRpcProvider(url, { name, chainId });
-  const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+  const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
   instances[chainId] = signer;
   return signer;
 }

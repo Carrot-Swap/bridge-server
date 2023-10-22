@@ -95,9 +95,9 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "bytes",
+        "internalType": "address",
         "name": "bridgeTxSenderAddress",
-        "type": "bytes"
+        "type": "address"
       },
       {
         "indexed": true,
@@ -150,9 +150,9 @@
       },
       {
         "indexed": false,
-        "internalType": "bytes",
+        "internalType": "address",
         "name": "destinationAddress",
-        "type": "bytes"
+        "type": "address"
       },
       {
         "indexed": false,
@@ -193,9 +193,9 @@
       },
       {
         "indexed": false,
-        "internalType": "bytes",
+        "internalType": "address",
         "name": "destinationAddress",
-        "type": "bytes"
+        "type": "address"
       },
       {
         "indexed": false,
@@ -305,9 +305,9 @@
   {
     "inputs": [
       {
-        "internalType": "bytes",
-        "name": "bridgeTxSenderAddress",
-        "type": "bytes"
+        "internalType": "address",
+        "name": "txSenderAddress",
+        "type": "address"
       },
       {
         "internalType": "uint256",
@@ -339,7 +339,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "bridgeTxSenderAddress",
+        "name": "txSenderAddress",
         "type": "address"
       },
       {
@@ -348,9 +348,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "bytes",
+        "internalType": "address",
         "name": "destinationAddress",
-        "type": "bytes"
+        "type": "address"
       },
       {
         "internalType": "uint256",
@@ -423,9 +423,9 @@
             "type": "uint256"
           },
           {
-            "internalType": "bytes",
+            "internalType": "address",
             "name": "destinationAddress",
-            "type": "bytes"
+            "type": "address"
           },
           {
             "internalType": "uint256",

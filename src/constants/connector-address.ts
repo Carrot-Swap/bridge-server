@@ -1,4 +1,7 @@
 export const CONNECTOR_ADDRESS = {
   neo_testnet: "0x1ecde43d0f1665f21c374a59078a1d882851329e",
-  neo_evm_testnet: "",
+  neo_evm_testnet: "0xfef2e1ebcde3563F377f5B8f3B96eA85Dcd45540",
+  polygon_mumbai: "0xAd0Bc3A152355CFa13b36DC953272bAD305DE7E0",
+  bnb_testnet: "0xAd0Bc3A152355CFa13b36DC953272bAD305DE7E0",
+  eth_goril: "0xAd0Bc3A152355CFa13b36DC953272bAD305DE7E0",
 };

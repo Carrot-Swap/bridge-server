@@ -13,6 +13,7 @@
     "outDir": "dist",
     "baseUrl": "src",
     "skipLibCheck": true,
+    "esModuleInterop": true,
     "paths": {
       "constants/*": ["constants/*"],
       "remotes/*": ["remotes/*"],

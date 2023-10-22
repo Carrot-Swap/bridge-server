@@ -9,4 +9,9 @@ export const NETWORKS = {
     "Zeta testnet",
     7001,
   ] as const,
+  polygon_mumbai: [
+    "https://polygon-mumbai-bor.publicnode.com",
+    "Polygon Mumbai",
+    80001,
+  ] as const,
 };

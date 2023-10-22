@@ -18,11 +18,11 @@ export async function startTask(task: () => Promise<void>) {
   }, 1000);
 }
 
+const repo = getRepository(BridgeBlockCacheEntity);
 export async function watch(
   network: string,
   task: (startBlockNumber: number) => Promise<number>
 ) {
-  const repo = getRepository(BridgeBlockCacheEntity);
   const cache =
     (await repo.findOneBy({ network })) ?? new BridgeBlockCacheEntity();
 
