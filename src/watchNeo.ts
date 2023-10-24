@@ -31,12 +31,17 @@ async function fetchNotifications(i: number) {
     return [];
   }
   const res = await rpcClient.executeAll<
-    { executions: rpc.ApplicationLogJson["executions"]; txId: string }[]
+    { executions: rpc.ApplicationLogJson["executions"]; txid: string }[]
   >(block.tx.map((tx) => rpc.Query.getApplicationLog(tx.hash)));
   return _.flatMap(
     _.flatMap(
       res.map((tx) =>
-        tx.executions.map((i) => ({ ...i.notifications, txId: tx.txId }))
+        tx.executions.map((i) =>
+          i.notifications.map((notification) => ({
+            ...notification,
+            txId: tx.txid,
+          }))
+        )
       )
     )
   )

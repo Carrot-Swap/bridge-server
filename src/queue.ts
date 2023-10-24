@@ -10,20 +10,18 @@ import { getRepository } from "./remotes";
 
 const messageRepo = getRepository(CrossChainMessage);
 
-const list: BridgeMessage[] = [];
-
 export function append(data: BridgeMessage[]) {
-  list.push(...data);
   const res = data.map((item) => CrossChainMessage.from(item));
-  messageRepo.insert(res);
+  messageRepo.save(res);
 }
 
 export async function startDispatcher() {
   startTask(async () => {
     const list = [];
-    while (list.length) {
-      const item = list.pop();
-      console.log("send", item);
+    const targets = await messageRepo.find({
+      where: { status: MessageProcessStatus.PENDING },
+    });
+    for (const item of targets) {
       const res = await sendMessage(item);
       list.push(res);
     }
@@ -31,7 +29,7 @@ export async function startDispatcher() {
   });
 }
 
-export async function sendMessage(data: BridgeMessage) {
+export async function sendMessage(data: CrossChainMessage) {
   try {
     const [url, name, chainId] = NETWORKS.neo_evm_testnet;
     const signer = getSigner(url, name, chainId);
@@ -49,20 +47,30 @@ export async function sendMessage(data: BridgeMessage) {
     );
     await tx.wait();
 
-    return {
-      ...data,
-      status: MessageProcessStatus.DONE,
-      destinationTxHash: tx.hash,
-    };
+    data.status = MessageProcessStatus.DONE;
+    data.destinationAddress = tx.hash;
+    return data;
   } catch (e) {
-    console.error(e);
-    return {
-      ...data,
-      status: MessageProcessStatus.FAIL,
-    };
+    console.log(e);
+    data.status = MessageProcessStatus.FAIL;
+    return data;
   }
 }
 
-async function update(data: BridgeMessage[]) {
-  await messageRepo.save(data.map((item) => CrossChainMessage.from(item)));
+async function update(data: CrossChainMessage[]) {
+  await messageRepo.save(data);
 }
+
+// {
+//   sourceTxHash: '0x5839d7c24a887434ea7e3c3cd07da10745ee8fa5f6d69cbab4294166c09759d2',
+//   destinationTxHash: null,
+//   sourceChainId: 80001,
+//   txOriginAddress: '0xef1F5D4C835Ac094F8D96C26c2A964C99b4050e0',
+//   txSenderAddress: '0x7e753a9f5585e67149d452F94309f490c3853A89',
+//   destinationChainId: '2970385',
+//   destinationAddress: '0xF056e7cfD3A451695FbB2E2D095bd649244Fe759',
+//   destinationGasLimit: '0',
+//   message: '0x0000000000000000000000000000000000000000000000000000000000013881000000000000000000000000ef1f5d4c835ac094f8d96c26c2a964c99b4050e000000000000000000000000000000000000000000000000000005af3107a4000',
+//   bridgeParams: '0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000',
+//   status: 2
+// }
