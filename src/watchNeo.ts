@@ -31,17 +31,22 @@ async function fetchNotifications(i: number) {
     return [];
   }
   const res = await rpcClient.executeAll<
-    { executions: rpc.ApplicationLogJson["executions"] }[]
+    { executions: rpc.ApplicationLogJson["executions"]; txId: string }[]
   >(block.tx.map((tx) => rpc.Query.getApplicationLog(tx.hash)));
   return _.flatMap(
-    _.flatMap(res.map((tx) => tx.executions.map((i) => i.notifications)))
+    _.flatMap(
+      res.map((tx) =>
+        tx.executions.map((i) => ({ ...i.notifications, txId: tx.txId }))
+      )
+    )
   )
     .filter((i) => i.contract.toLowerCase() === connectorAddress)
-    .map((i) => toDTO(i.state));
+    .map((i) => toDTO(i.txId, i.state));
 }
-function toDTO(state: sc.StackItemJson): BridgeMessage {
+function toDTO(txId: string, state: sc.StackItemJson): BridgeMessage {
   const res = makeResult(state);
   return {
+    txHash: txId,
     sourceChainId: CONST.MAGIC_NUMBER.TestNet,
     txOriginAddress: `0x${wallet.getScriptHashFromAddress(res.getAddress(0))}`,
     txSenderAddress: `0x${wallet.getScriptHashFromAddress(res.getAddress(1))}`,

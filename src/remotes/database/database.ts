@@ -1,12 +1,12 @@
 import { DataSource, EntityTarget, ObjectLiteral, Repository } from "typeorm";
 import { DATABASE_CONFIG } from "../../constants";
-import { BridgeBlockCacheEntity } from "../../entites";
+import { BridgeBlockCacheEntity, CrossChainMessage } from "../../entites";
 
 export const database = new DataSource({
   type: "postgres",
   ...DATABASE_CONFIG(),
   synchronize: true,
-  entities: [BridgeBlockCacheEntity],
+  entities: [BridgeBlockCacheEntity, CrossChainMessage],
   ssl: true,
   extra: {
     ssl: {

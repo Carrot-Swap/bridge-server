@@ -1,4 +1,7 @@
+import { MessageProcessStatus } from "./MessageProcessStatus";
+
 export interface BridgeMessage {
+  txHash: string;
   sourceChainId: number;
   txOriginAddress: string;
   txSenderAddress: string;
@@ -7,4 +10,6 @@ export interface BridgeMessage {
   destinationGasLimit: string;
   message: string;
   bridgeParams: string;
+  status?: MessageProcessStatus;
+  destinationTxHash?: string;
 }

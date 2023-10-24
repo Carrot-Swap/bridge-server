@@ -40,6 +40,7 @@ export async function watchEvm(network: keyof typeof NETWORKS) {
       );
 
       return {
+        txHash: log.transactionHash,
         sourceChainId: chainId,
         txOriginAddress: sourceTxOriginAddress,
         txSenderAddress: bridgeTxSenderAddress,
