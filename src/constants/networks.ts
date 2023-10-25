@@ -14,4 +14,14 @@ export const NETWORKS = {
     "Polygon Mumbai",
     80001,
   ] as const,
+  eth_goril: [
+    "https://ethereum-goerli.publicnode.com",
+    "Etherum Goril",
+    5,
+  ] as const,
+  bsc_testnet: [
+    "https://bsc-testnet.publicnode.com",
+    "Binance Smart Chain Testnet",
+    97,
+  ] as const,
 };

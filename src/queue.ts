@@ -1,6 +1,7 @@
 import { CONNECTOR_ABI } from "abis";
 import { NETWORKS } from "constants/networks";
 import { ethers } from "ethers";
+import { resolveMission } from "remotes/carrot";
 import { BridgeMessage } from "types/BridgeMessage";
 import { MessageProcessStatus } from "types/MessageProcessStatus";
 import { startTask } from "utils/watch";
@@ -59,6 +60,10 @@ export async function sendMessage(data: CrossChainMessage) {
 
 async function update(data: CrossChainMessage[]) {
   await messageRepo.save(data);
+  const list = data
+    .filter((i) => i.status === MessageProcessStatus.DONE)
+    .map((i) => i.sourceTxHash);
+  resolveMission(list);
 }
 
 // {
