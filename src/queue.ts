@@ -63,7 +63,7 @@ async function update(data: CrossChainMessage[]) {
   const list = data
     .filter((i) => i.status === MessageProcessStatus.DONE)
     .map((i) => i.sourceTxHash);
-  resolveMission(list);
+  resolveMission(list).catch(console.error);
 }
 
 // {
