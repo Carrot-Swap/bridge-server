@@ -23,7 +23,7 @@ export async function startDispatcher() {
       where: { status: MessageProcessStatus.PENDING },
     });
     for (const chunk of _.chunk(targets, 5)) {
-      await update(chunk.map(sendMessage));
+      await update(await Promise.all(chunk.map(sendMessage)));
     }
   });
 }
