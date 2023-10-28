@@ -22,13 +22,8 @@ export async function startDispatcher() {
     const targets = await messageRepo.find({
       where: { status: MessageProcessStatus.PENDING },
     });
-    for (const chunk of _.chunk(targets, 10)) {
-      const list = [];
-      for (const item of chunk) {
-        const res = await sendMessage(item);
-        list.push(res);
-      }
-      await update(list);
+    for (const chunk of _.chunk(targets, 5)) {
+      await update(chunk.map(sendMessage));
     }
   });
 }
