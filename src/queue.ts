@@ -1,6 +1,6 @@
 import { CONNECTOR_ABI } from "abis";
 import { NETWORKS } from "constants/networks";
-import { ethers } from "ethers";
+import { Signer, ethers } from "ethers";
 import { resolveMission } from "remotes/carrot";
 import { BridgeMessage } from "types/BridgeMessage";
 import { MessageProcessStatus } from "types/MessageProcessStatus";
@@ -8,6 +8,7 @@ import { startTask } from "utils/watch";
 import { getSigner } from "./constants";
 import { CrossChainMessage } from "./entites";
 import { getRepository } from "./remotes";
+import { sleep } from "./utils";
 const _ = require("lodash");
 
 const messageRepo = getRepository(CrossChainMessage);
@@ -18,21 +19,32 @@ export function append(data: BridgeMessage[]) {
 }
 
 export async function startDispatcher() {
+  const [url, name, chainId] = NETWORKS.neo_evm_testnet;
+  const signer = getSigner(url, name, chainId);
+  let nonce = await signer.getNonce();
   startTask(async () => {
     const targets = await messageRepo.find({
       where: { status: MessageProcessStatus.PENDING },
     });
-    for (const chunk of _.chunk(targets, 5)) {
-      await update(await Promise.all(chunk.map(sendMessage)));
+    for (const chunk of _.chunk(targets, 10)) {
+      const list = [];
+      for (const item of chunk) {
+        const wait = sendMessage(item, signer, nonce++).then(update);
+        list.push(wait);
+        await sleep(100);
+      }
+      await Promise.all(list);
     }
   });
 }
 
-export async function sendMessage(data: CrossChainMessage) {
+export async function sendMessage(
+  data: CrossChainMessage,
+  signer: Signer,
+  nonce: number
+) {
+  console.log("send", data);
   try {
-    console.log("send", data);
-    const [url, name, chainId] = NETWORKS.neo_evm_testnet;
-    const signer = getSigner(url, name, chainId);
     const connector = new ethers.Contract(
       "0xfef2e1ebcde3563F377f5B8f3B96eA85Dcd45540",
       CONNECTOR_ABI,
@@ -43,10 +55,12 @@ export async function sendMessage(data: CrossChainMessage) {
       data.sourceChainId,
       data.destinationAddress,
       data.message,
-      "0x0000000000000000000000000000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000000000000000000000000000",
+      {
+        nonce,
+      }
     );
     await tx.wait();
-
     data.status = MessageProcessStatus.DONE;
     data.destinationAddress = tx.hash;
     return data;
@@ -57,12 +71,11 @@ export async function sendMessage(data: CrossChainMessage) {
   }
 }
 
-async function update(data: CrossChainMessage[]) {
+async function update(data: CrossChainMessage) {
   await messageRepo.save(data);
-  const list = data
-    .filter((i) => i.status === MessageProcessStatus.DONE)
-    .map((i) => i.sourceTxHash);
-  resolveMission(list).catch(console.error);
+  if (data.status !== MessageProcessStatus.DONE) {
+    resolveMission([data.sourceTxHash]).catch(console.error);
+  }
 }
 
 // {
