@@ -1,8 +1,8 @@
 import { join } from "path";
-import { watchEvm } from "watchEvm";
-import { database } from "./remotes";
-import { watchNeo } from "watchNeo";
 import { startDispatcher } from "queue";
+import { watchEvm } from "watchEvm";
+import { watchNeo } from "watchNeo";
+import { database } from "./remotes";
 
 require("dotenv").config({ path: join(__dirname, "../.env") });
 

@@ -8,6 +8,7 @@ import { startTask } from "utils/watch";
 import { getSigner } from "./constants";
 import { CrossChainMessage } from "./entites";
 import { getRepository } from "./remotes";
+const _ = require("lodash");
 
 const messageRepo = getRepository(CrossChainMessage);
 
@@ -18,20 +19,23 @@ export function append(data: BridgeMessage[]) {
 
 export async function startDispatcher() {
   startTask(async () => {
-    const list = [];
     const targets = await messageRepo.find({
       where: { status: MessageProcessStatus.PENDING },
     });
-    for (const item of targets) {
-      const res = await sendMessage(item);
-      list.push(res);
+    for (const chunk of _.chunk(targets, 10)) {
+      const list = [];
+      for (const item of chunk) {
+        const res = await sendMessage(item);
+        list.push(res);
+      }
+      await update(list);
     }
-    await update(list);
   });
 }
 
 export async function sendMessage(data: CrossChainMessage) {
   try {
+    console.log("send", data);
     const [url, name, chainId] = NETWORKS.neo_evm_testnet;
     const signer = getSigner(url, name, chainId);
     const connector = new ethers.Contract(
