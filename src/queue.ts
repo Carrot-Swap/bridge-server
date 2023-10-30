@@ -21,12 +21,9 @@ export function append(data: BridgeMessage[]) {
 export async function startDispatcher() {
   const [url, name, chainId] = NETWORKS.neo_evm_testnet;
   const signer = getSigner(url, name, chainId);
-  let nonce = await signer.getNonce();
-  startTask(async () => {
-    const targets = await messageRepo.find({
-      where: { status: MessageProcessStatus.PENDING },
-    });
+  const start = async (targets: CrossChainMessage[]) => {
     for (const chunk of _.chunk(targets, 10)) {
+      let nonce = await signer.getNonce();
       const list = [];
       for (const item of chunk) {
         const wait = sendMessage(item, signer, nonce++).then(update);
@@ -35,6 +32,17 @@ export async function startDispatcher() {
       }
       await Promise.all(list);
     }
+  };
+  startTask(async () => {
+    const targets = await messageRepo.find({
+      where: { status: MessageProcessStatus.PENDING },
+    });
+    await start(targets);
+
+    const retryList = await messageRepo.find({
+      where: { status: MessageProcessStatus.FAIL },
+    });
+    await start(retryList);
   });
 }
 
