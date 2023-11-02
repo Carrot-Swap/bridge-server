@@ -89,6 +89,10 @@ async function resolveMossions(data: CrossChainMessage[]) {
   if (!list.length) {
     return;
   }
+  console.log(
+    "resolve missions",
+    list.map((i) => i.sourceTxHash)
+  );
   resolveMission(list.map((i) => i.sourceTxHash)).catch(console.error);
 }
 
