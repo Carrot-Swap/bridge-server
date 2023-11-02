@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import { CONNECTOR_ABI } from "abis";
 import { NETWORKS } from "constants/networks";
 import { Signer, ethers } from "ethers";
@@ -74,7 +75,7 @@ export async function sendMessage(
     data.destinationTxHash = tx.hash;
     return data;
   } catch (e) {
-    console.log(e);
+    Sentry.captureException(e);
     data.status = MessageProcessStatus.FAIL;
     return data;
   }
@@ -93,7 +94,9 @@ async function resolveMossions(data: CrossChainMessage[]) {
     "resolve missions",
     list.map((i) => i.sourceTxHash)
   );
-  resolveMission(list.map((i) => i.sourceTxHash)).catch(console.error);
+  resolveMission(list.map((i) => i.sourceTxHash)).catch(
+    Sentry.captureException
+  );
 }
 
 // {
