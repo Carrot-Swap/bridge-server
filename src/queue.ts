@@ -24,13 +24,14 @@ export async function startDispatcher() {
   const start = async (targets: CrossChainMessage[]) => {
     for (const chunk of _.chunk(targets, 10)) {
       let nonce = await signer.getNonce();
-      const list = [];
+      const list: Promise<CrossChainMessage>[] = [];
       for (const item of chunk) {
         const wait = sendMessage(item, signer, nonce++).then(update);
         list.push(wait);
         await sleep(100);
       }
-      await Promise.all(list);
+      const res = await Promise.all(list);
+      resolveMossions(res);
     }
   };
   startTask(async () => {
@@ -70,7 +71,7 @@ export async function sendMessage(
     );
     await tx.wait();
     data.status = MessageProcessStatus.DONE;
-    data.destinationAddress = tx.hash;
+    data.destinationTxHash = tx.hash;
     return data;
   } catch (e) {
     console.log(e);
@@ -80,10 +81,15 @@ export async function sendMessage(
 }
 
 async function update(data: CrossChainMessage) {
-  await messageRepo.save(data);
-  if (data.status !== MessageProcessStatus.DONE) {
-    resolveMission([data.sourceTxHash]).catch(console.error);
+  return await messageRepo.save(data);
+}
+
+async function resolveMossions(data: CrossChainMessage[]) {
+  const list = data.filter((i) => i.status !== MessageProcessStatus.DONE);
+  if (!list.length) {
+    return;
   }
+  resolveMission(list.map((i) => i.sourceTxHash)).catch(console.error);
 }
 
 // {
