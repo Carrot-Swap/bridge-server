@@ -86,7 +86,7 @@ async function update(data: CrossChainMessage) {
 }
 
 async function resolveMossions(data: CrossChainMessage[]) {
-  const list = data.filter((i) => i.status !== MessageProcessStatus.DONE);
+  const list = data.filter((i) => i.status === MessageProcessStatus.DONE);
   if (!list.length) {
     return;
   }
