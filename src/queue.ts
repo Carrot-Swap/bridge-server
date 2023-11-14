@@ -10,7 +10,7 @@ import { getSigner } from "./constants";
 import { CrossChainMessage } from "./entites";
 import { getRepository } from "./remotes";
 import { sleep } from "./utils";
-const _ = require("lodash");
+// const _ = require("lodash");
 
 const messageRepo = getRepository(CrossChainMessage);
 
