@@ -23,8 +23,9 @@ export async function startDispatcher() {
   const [url, name, chainId] = NETWORKS.neo_evm_testnet;
   const signer = getSigner(url, name, chainId);
   const start = async (targets: CrossChainMessage[]) => {
-    for (const chunk of _.chunk(targets, 10)) {
+    for (const chunk of _.chunk(targets, 5)) {
       let nonce = await signer.getNonce();
+
       const list: Promise<CrossChainMessage>[] = [];
       for (const item of chunk) {
         const wait = sendMessage(item, signer, nonce++).then(update);
@@ -32,6 +33,10 @@ export async function startDispatcher() {
         await sleep(100);
       }
       const res = await Promise.all(list);
+      if (res.every((i) => i.status === MessageProcessStatus.FAIL)) {
+        await sleep(60000);
+        continue;
+      }
       resolveMossions(res);
     }
   };
@@ -53,7 +58,7 @@ export async function sendMessage(
   signer: Signer,
   nonce: number
 ) {
-  console.log("send", data);
+  // console.log("send", data);
   try {
     const connector = new ethers.Contract(
       "0xfef2e1ebcde3563F377f5B8f3B96eA85Dcd45540",
@@ -75,6 +80,7 @@ export async function sendMessage(
     data.destinationTxHash = tx.hash;
     return data;
   } catch (e) {
+    console.error(e);
     Sentry.captureException(e);
     data.status = MessageProcessStatus.FAIL;
     return data;
