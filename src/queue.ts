@@ -23,22 +23,31 @@ export async function startDispatcher() {
   const [url, name, chainId] = NETWORKS.neo_evm_testnet;
   const signer = getSigner(url, name, chainId);
   const start = async (targets: CrossChainMessage[]) => {
-    for (const chunk of _.chunk(targets, 5)) {
-      let nonce = await signer.getNonce();
-
-      const list: Promise<CrossChainMessage>[] = [];
-      for (const item of chunk) {
-        const wait = sendMessage(item, signer, nonce++).then(update);
-        list.push(wait);
-        await sleep(100);
-      }
-      const res = await Promise.all(list);
-      if (res.every((i) => i.status === MessageProcessStatus.FAIL)) {
-        await sleep(60000);
+    for (const item of targets) {
+      const res = await sendMessage(item, signer);
+      if (res.status === MessageProcessStatus.FAIL) {
+        await sleep(30000);
         continue;
       }
-      resolveMossions(res);
+      update(res);
+      resolveMossions([res]);
     }
+    // for (const chunk of _.chunk(targets, 5)) {
+    //   let nonce = await signer.getNonce();
+
+    //   const list: Promise<CrossChainMessage>[] = [];
+    //   for (const item of chunk) {
+    //     const wait = sendMessage(item, signer, nonce++).then(update);
+    //     list.push(wait);
+    //     await sleep(100);
+    //   }
+    //   const res = await Promise.all(list);
+    //   if (res.every((i) => i.status === MessageProcessStatus.FAIL)) {
+    //     await sleep(60000);
+    //     continue;
+    //   }
+    //   resolveMossions(res);
+    // }
   };
   startTask(async () => {
     const targets = await messageRepo.find({
@@ -56,7 +65,7 @@ export async function startDispatcher() {
 export async function sendMessage(
   data: CrossChainMessage,
   signer: Signer,
-  nonce: number
+  nonce?: number
 ) {
   // console.log("send", data);
   try {
