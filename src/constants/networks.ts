@@ -24,4 +24,9 @@ export const NETWORKS = {
     "Binance Smart Chain Testnet",
     97,
   ] as const,
+  eth_sepolia: [
+    "https://ethereum-sepolia.publicnode.com",
+    "Ethereum Sepolia",
+    11155111,
+  ] as const,
 };

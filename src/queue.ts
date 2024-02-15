@@ -2,7 +2,6 @@ import * as Sentry from "@sentry/node";
 import { CONNECTOR_ABI } from "abis";
 import { NETWORKS } from "constants/networks";
 import { Signer, ethers } from "ethers";
-import { resolveMission } from "remotes/carrot";
 import { BridgeMessage } from "types/BridgeMessage";
 import { MessageProcessStatus } from "types/MessageProcessStatus";
 import { startTask } from "utils/watch";
@@ -20,7 +19,7 @@ export function append(data: BridgeMessage[]) {
 }
 
 export async function startDispatcher() {
-  const [url, name, chainId] = NETWORKS.neo_evm_testnet;
+  const [url, name, chainId] = NETWORKS.eth_sepolia;
   const signer = getSigner(url, name, chainId);
   const start = async (targets: CrossChainMessage[]) => {
     for (const chunk of _.chunk(targets, 10)) {
@@ -37,7 +36,7 @@ export async function startDispatcher() {
         await sleep(60000);
         continue;
       }
-      resolveMossions(res);
+      // resolveMossions(res);
     }
   };
   startTask(async () => {
@@ -61,7 +60,7 @@ export async function sendMessage(
   // console.log("send", data);
   try {
     const connector = new ethers.Contract(
-      "0xfef2e1ebcde3563F377f5B8f3B96eA85Dcd45540",
+      "0x0149392a9EEE985F2B82B8a64213BB10159863F8",
       CONNECTOR_ABI,
       signer
     );
@@ -91,19 +90,19 @@ async function update(data: CrossChainMessage) {
   return await messageRepo.save(data);
 }
 
-async function resolveMossions(data: CrossChainMessage[]) {
-  const list = data.filter((i) => i.status === MessageProcessStatus.DONE);
-  if (!list.length) {
-    return;
-  }
-  console.log(
-    "resolve missions",
-    list.map((i) => i.sourceTxHash)
-  );
-  resolveMission(list.map((i) => i.sourceTxHash)).catch(
-    Sentry.captureException
-  );
-}
+// async function resolveMossions(data: CrossChainMessage[]) {
+//   const list = data.filter((i) => i.status === MessageProcessStatus.DONE);
+//   if (!list.length) {
+//     return;
+//   }
+//   console.log(
+//     "resolve missions",
+//     list.map((i) => i.sourceTxHash)
+//   );
+//   resolveMission(list.map((i) => i.sourceTxHash)).catch(
+//     Sentry.captureException
+//   );
+// }
 
 // {
 //   sourceTxHash: '0x5839d7c24a887434ea7e3c3cd07da10745ee8fa5f6d69cbab4294166c09759d2',
