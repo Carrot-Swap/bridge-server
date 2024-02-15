@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/node";
 import { CONNECTOR_ABI } from "abis";
 import { NETWORKS } from "constants/networks";
 import { Signer, ethers } from "ethers";
@@ -51,7 +50,6 @@ export async function startDispatcher() {
     await start(retryList);
   });
 }
-
 export async function sendMessage(
   data: CrossChainMessage,
   signer: Signer,
@@ -79,8 +77,14 @@ export async function sendMessage(
     data.destinationTxHash = tx.hash;
     return data;
   } catch (e) {
-    console.error(e);
-    Sentry.captureException(e);
+    console.log(
+      "onReceive",
+      data.txSenderAddress,
+      data.sourceChainId,
+      data.destinationAddress,
+      data.message
+    );
+    // Sentry.captureException(e);
     data.status = MessageProcessStatus.FAIL;
     return data;
   }
