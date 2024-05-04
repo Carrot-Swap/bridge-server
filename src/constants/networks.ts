@@ -1,6 +1,6 @@
 export const NETWORKS = {
   neo_evm_testnet: [
-    "https://evm.ngd.network:32331",
+    "https://neoxseed1.ngd.network",
     "NEO EVM testnet",
     2970385,
   ] as const,
