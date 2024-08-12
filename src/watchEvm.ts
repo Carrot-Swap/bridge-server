@@ -1,18 +1,19 @@
 import { CONNECTOR_ABI } from "abis";
-import { CONNECTOR_ADDRESS } from "constants/connector-address";
+import { CONNECTOR_ADDRESS } from "constants/addresses";
 import { ethers } from "ethers";
-import { append } from "queue";
 import { BridgeMessage } from "types/BridgeMessage";
+import { ResilientRpcProvider } from "utils/ResilientRpcProvider";
 import { watch } from "utils/watch";
+import { append } from "worker/queue/append";
 import { NETWORKS } from "./constants/networks";
 
 const SENT_EVENT =
   "0x5b597f6fee9cb6d502de7253fc9d6cd9ca476deb484015b3026c58efbb350b1b";
 
 export async function watchEvm(network: keyof typeof NETWORKS) {
-  const [url, name, chainId] = NETWORKS[network];
+  const { url } = NETWORKS[network];
   await watch(network, async (startBlockNumber) => {
-    const provider = new ethers.JsonRpcProvider(url, { name, chainId });
+    const provider = new ResilientRpcProvider(url, network);
     const contract = new ethers.Contract(
       CONNECTOR_ADDRESS[network],
       CONNECTOR_ABI
@@ -41,7 +42,7 @@ export async function watchEvm(network: keyof typeof NETWORKS) {
 
       return {
         txHash: log.transactionHash,
-        sourceChainId: chainId,
+        sourceChainId: network,
         txOriginAddress: sourceTxOriginAddress,
         txSenderAddress: bridgeTxSenderAddress,
         destinationChainId: destinationChainId,

@@ -1,0 +1,14 @@
+export const MULTISIG_TSS_ADDRESS = {
+  neo_x: "0xe09A8FacDcf8a92DC1d4Ca8b7064E5e1D5263b2C",
+  polygon: "0x233dbacf1c09a7c16fe4b3f960871de8687e812c",
+};
+
+export const CONNECTOR_ADDRESS = {
+  neo_x: "0x025c4A51DD53d90b95b8d480Ff420b5934b7ba11",
+  polygon: "0x1A1FAe64Ea1a1c00727E6801315a2d9b8542e711",
+};
+
+export const VERIFY_SIGNATURE_ADDRESS = {
+  neo_x: "0xE91724E078434f6d0Fb36260b0014f6e5e48D12E",
+  polygon: "0x8F11b060C689a75eb3743b23096EEd7be6957af1",
+};

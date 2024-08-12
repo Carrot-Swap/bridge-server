@@ -1,32 +1,40 @@
 export const NETWORKS = {
-  neo_evm_testnet: [
-    "https://neoxseed1.ngd.network",
-    "NEO EVM testnet",
-    2970385,
-  ] as const,
-  zeta: [
-    "https://zetachain-athens-evm.blockpi.network/v1/rpc/public",
-    "Zeta testnet",
-    7001,
-  ] as const,
-  polygon_mumbai: [
-    "https://polygon-mumbai-bor.publicnode.com",
-    "Polygon Mumbai",
-    80001,
-  ] as const,
-  eth_goril: [
-    "https://ethereum-goerli.publicnode.com",
-    "Etherum Goril",
-    5,
-  ] as const,
-  bsc_testnet: [
-    "https://bsc-testnet.publicnode.com",
-    "Binance Smart Chain Testnet",
-    97,
-  ] as const,
-  eth_sepolia: [
-    "https://ethereum-sepolia.publicnode.com",
-    "Ethereum Sepolia",
-    11155111,
-  ] as const,
+  47763: {
+    name: "Neo X",
+    url: [`https://mainnet-1.rpc.banelabs.org`],
+  },
+  1: {
+    name: "Ethereum",
+    url: [
+      "https://eth.llamarpc.com",
+      "https://virginia.rpc.blxrbdn.com",
+      "https://ethereum-mainnet.gateway.tatum.io",
+      "https://uk.rpc.blxrbdn.com",
+    ],
+  },
+  137: {
+    url: [
+      "https://polygon.drpc.org",
+      "https://polygon.llamarpc.com",
+      "https://polygon-pokt.nodies.app",
+    ],
+    name: "Polygon",
+  },
+  56: {
+    name: "Binance Smart Chain",
+    url: [
+      "https://binance.llamarpc.com",
+      "https://bsc-pokt.nodies.app",
+      "https://bsc.rpc.blxrbdn.com",
+    ],
+  },
+  42161: {
+    url: [
+      `https://arb1.arbitrum.io/rpc`,
+      "https://arbitrum.llamarpc.com",
+      "https://arbitrum.drpc.org",
+      "https://rpc.ankr.com/arbitrum",
+    ],
+    name: "Arbitrum One",
+  },
 };

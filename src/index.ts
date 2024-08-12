@@ -2,9 +2,8 @@ import * as Sentry from "@sentry/node";
 import { ProfilingIntegration } from "@sentry/profiling-node";
 import { join } from "path";
 import { watchEvm } from "watchEvm";
-import { watchNeo } from "watchNeo";
+import { startDispatcher } from "worker/queue";
 import { database } from "./remotes";
-import { startDispatcher } from "queue";
 
 require("dotenv").config({ path: join(__dirname, "../.env") });
 
@@ -19,11 +18,12 @@ async function main() {
   });
 
   await database.initialize();
-  await startDispatcher();
-  await watchNeo();
-  await watchEvm("polygon_mumbai");
-  await watchEvm("eth_sepolia");
-  await watchEvm("bsc_testnet");
+  await startDispatcher(false);
+  await watchEvm(47763);
+  await watchEvm(1);
+  await watchEvm(137);
+  await watchEvm(56);
+  await watchEvm(42161);
 }
 
 main().catch(Sentry.captureException);
