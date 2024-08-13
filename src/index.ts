@@ -4,6 +4,7 @@ import { join } from "path";
 import { watchEvm } from "watchEvm";
 import { startDispatcher } from "worker/queue";
 import { database } from "./remotes";
+import { getSignerAddress } from "constants/env";
 
 require("dotenv").config({ path: join(__dirname, "../.env") });
 
@@ -24,6 +25,7 @@ async function main() {
   await watchEvm(137);
   // await watchEvm(56);
   // await watchEvm(42161);
+  console.log("started", getSignerAddress());
 }
 
 main().catch((e) => {
