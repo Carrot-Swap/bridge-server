@@ -5,6 +5,7 @@ import { watchEvm } from "watchEvm";
 import { startDispatcher } from "worker/queue";
 import { database } from "./remotes";
 import { getSignerAddress } from "constants/env";
+import { SEND_MESSAGE } from "./env";
 
 require("dotenv").config({ path: join(__dirname, "../.env") });
 
@@ -19,7 +20,7 @@ async function main() {
   });
 
   await database.initialize();
-  await startDispatcher(false);
+  await startDispatcher(SEND_MESSAGE());
   // await watchEvm(47763);
   // await watchEvm(1);
   await watchEvm(137);

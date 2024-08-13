@@ -3,6 +3,8 @@ import { config } from "dotenv";
 
 config();
 
+export const SEND_MESSAGE = () => process.env.SEND_MESSAGE === "true";
+
 export function getDeployer() {
   return new wallet.Account(process.env.NEO_PRIVATE_KEY);
 }
