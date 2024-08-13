@@ -40,8 +40,9 @@ export async function sendMessage(data: CrossChainMessage, signer: Signer) {
     await messageRepo.save(data);
     return data;
   } catch (e) {
+    console.error(e);
     console.log(
-      "onReceive",
+      "failed onReceive",
       data.txSenderAddress,
       data.sourceChainId,
       data.destinationAddress,
