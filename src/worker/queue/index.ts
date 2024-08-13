@@ -1,18 +1,15 @@
 import { NETWORKS } from "constants/networks";
 import { MessageProcessStatus } from "types/MessageProcessStatus";
-import { startTask } from "utils/watch";
+import { startJob } from "utils/starJob";
 import { getSigner } from "../../constants";
 import { CrossChainMessage } from "../../entites";
 import { getRepository } from "../../remotes";
 import { sendMessage } from "./sendMessage";
-import { signMessages } from "./signMessages";
-const _ = require("lodash");
 
 const messageRepo = getRepository(CrossChainMessage);
 
 export async function startDispatcher(sendMessage?: boolean) {
-  startTask(async () => {
-    await signMessages();
+  startJob(async () => {
     if (!sendMessage) {
       return;
     }

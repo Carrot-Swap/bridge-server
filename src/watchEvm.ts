@@ -1,3 +1,4 @@
+import { captureException } from "@sentry/node";
 import { CONNECTOR_ABI } from "abis";
 import { CONNECTOR_ADDRESS } from "constants/addresses";
 import { ethers } from "ethers";
@@ -19,40 +20,52 @@ export async function watchEvm(network: keyof typeof NETWORKS) {
       CONNECTOR_ABI
     );
     const currentBlock = await provider.getBlockNumber();
-    const logs = await provider.getLogs({
-      fromBlock: startBlockNumber,
-      toBlock: currentBlock,
-      address: [CONNECTOR_ADDRESS[network]],
-      topics: [SENT_EVENT],
-    });
-    const res: BridgeMessage[] = logs.map((log) => {
-      const [
-        sourceTxOriginAddress,
-        bridgeTxSenderAddress,
-        destinationChainId,
-        destinationAddress,
-        destinationGasLimit,
-        message,
-        bridgeParams,
-      ] = contract.interface.decodeEventLog(
-        "BridgeMessageSent",
-        log.data,
-        log.topics
-      );
+    let start = startBlockNumber;
+    let end = Math.min(start + 500, currentBlock);
+    try {
+      do {
+        const logs = await provider.getLogs({
+          fromBlock: start,
+          toBlock: end,
+          address: [CONNECTOR_ADDRESS[network]],
+          topics: [SENT_EVENT],
+        });
+        const res: BridgeMessage[] = logs.map((log) => {
+          const [
+            sourceTxOriginAddress,
+            bridgeTxSenderAddress,
+            destinationChainId,
+            destinationAddress,
+            destinationGasLimit,
+            message,
+            bridgeParams,
+          ] = contract.interface.decodeEventLog(
+            "BridgeMessageSent",
+            log.data,
+            log.topics
+          );
 
-      return {
-        txHash: log.transactionHash,
-        sourceChainId: network,
-        txOriginAddress: sourceTxOriginAddress,
-        txSenderAddress: bridgeTxSenderAddress,
-        destinationChainId: destinationChainId,
-        destinationAddress: destinationAddress,
-        destinationGasLimit: destinationGasLimit,
-        message: message,
-        bridgeParams: bridgeParams,
-      };
-    });
-    append(res);
-    return currentBlock;
+          return {
+            txHash: log.transactionHash,
+            sourceChainId: network,
+            txOriginAddress: sourceTxOriginAddress,
+            txSenderAddress: bridgeTxSenderAddress,
+            destinationChainId: destinationChainId,
+            destinationAddress: destinationAddress,
+            destinationGasLimit: destinationGasLimit,
+            message: message,
+            bridgeParams: bridgeParams,
+          };
+        });
+        await append(res);
+        start += 500;
+        end += Math.min(start + 500, currentBlock);
+      } while (end < currentBlock);
+    } catch (e) {
+      console.error(e);
+      captureException(e);
+    } finally {
+      return start;
+    }
   });
 }

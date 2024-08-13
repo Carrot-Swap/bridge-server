@@ -1,46 +1,16 @@
 import { VERIFY_SIGNATURE_ABI } from "abis";
 import { VERIFY_SIGNATURE_ADDRESS } from "constants/addresses";
-import { getSigner, getSignerAddress } from "constants/env";
+import { getSigner } from "constants/env";
 import { NETWORKS } from "constants/networks";
 import { CrossChainMessage } from "entites/message.entity";
 import { SignedSignatureEntity } from "entites/signed-signature.entity";
 import { ethers, getBytes } from "ethers";
-import { getRepository } from "typeorm";
-import { MessageProcessStatus } from "types/MessageProcessStatus";
 
-const messageRepo = getRepository(CrossChainMessage);
-const signatureRepo = getRepository(SignedSignatureEntity);
-
-export async function signMessages() {
-  const pendings: string[] = await messageRepo
-    .query(
-      `select source_tx_hash from cross_chain_message where status = ${MessageProcessStatus.PENDING}`
-    )
-    .then((res) => res.map((i) => i.source_tx_hash));
-
-  const excludes = await signatureRepo
-    .createQueryBuilder("signed_signature")
-    .select()
-    .where("signed_signature.source_tx_hash IN (:...targets)", {
-      targets: pendings,
-    })
-    .andWhere("LOWER(signed_signature.signer) = LOWER(:signer)", {
-      signer: getSignerAddress(),
-    })
-    .getMany();
-
-  const targets = pendings.filter(
-    (i) =>
-      !excludes.find((j) => j.sourceTxHash.toLowerCase() === i.toLowerCase())
-  );
-
-  const messages = await messageRepo
-    .createQueryBuilder("cross_chain_message")
-    .select()
-    .where("cross_chain_message.source_tx_hash NOT IN (:...targets)", {
-      targets,
-    })
-    .getMany();
+export async function signMessages(messages: CrossChainMessage[]) {
+  if (!messages.length) {
+    return [];
+  }
+  console.log("sign messages", messages.length);
 
   const res = await Promise.all(
     messages.map(async (i) => {
@@ -48,9 +18,10 @@ export async function signMessages() {
       const signer = getSigner(url, i.sourceChainId);
       const contract = new ethers.Contract(
         VERIFY_SIGNATURE_ADDRESS[i.sourceChainId],
-        VERIFY_SIGNATURE_ABI
+        VERIFY_SIGNATURE_ABI,
+        signer
       );
-      const messageHash = await contract.getMessageHash(
+      const messageHash = await contract.getMessageHash.staticCall(
         i.txSenderAddress,
         i.sourceChainId,
         i.destinationAddress,
@@ -65,5 +36,5 @@ export async function signMessages() {
       return row;
     })
   );
-  await signatureRepo.save(res);
+  return res;
 }

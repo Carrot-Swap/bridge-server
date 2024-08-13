@@ -3,7 +3,7 @@ import { MULTISIG_TSS_ADDRESS } from "constants/addresses";
 import { CrossChainMessage } from "entites/message.entity";
 import { SignedSignatureEntity } from "entites/signed-signature.entity";
 import { Signer, ethers } from "ethers";
-import { getRepository } from "typeorm";
+import { getRepository } from "remotes/database";
 import { MessageProcessStatus } from "types/MessageProcessStatus";
 
 const messageRepo = getRepository(CrossChainMessage);

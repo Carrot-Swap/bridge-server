@@ -19,11 +19,14 @@ async function main() {
 
   await database.initialize();
   await startDispatcher(false);
-  await watchEvm(47763);
-  await watchEvm(1);
+  // await watchEvm(47763);
+  // await watchEvm(1);
   await watchEvm(137);
-  await watchEvm(56);
-  await watchEvm(42161);
+  // await watchEvm(56);
+  // await watchEvm(42161);
 }
 
-main().catch(Sentry.captureException);
+main().catch((e) => {
+  Sentry.captureException(e);
+  throw e;
+});
