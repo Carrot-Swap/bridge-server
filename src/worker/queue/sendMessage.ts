@@ -9,8 +9,11 @@ import { MessageProcessStatus } from "types/MessageProcessStatus";
 const messageRepo = getRepository(CrossChainMessage);
 const signatureRepo = getRepository(SignedSignatureEntity);
 
+const options = {
+  47763: { gasPrice: 40000000000 },
+};
+
 export async function sendMessage(data: CrossChainMessage, signer: Signer) {
-  console.log("try send", data);
   try {
     const tss = new ethers.Contract(
       MULTISIG_TSS_ADDRESS[data.destinationChainId],
@@ -22,16 +25,17 @@ export async function sendMessage(data: CrossChainMessage, signer: Signer) {
     });
     const count = await tss.tssSignerCount();
     if (signatures.length < count) {
-      console.log("not enough signatures");
       return;
     }
+    console.log("try send", data);
     const tx = await tss.send(
       data.txSenderAddress,
       data.sourceChainId,
       data.destinationAddress,
       data.message,
       "0x0000000000000000000000000000000000000000000000000000000000000000",
-      signatures.map((i) => i.data)
+      signatures.map((i) => i.data),
+      options[data.destinationChainId]
     );
     await tx.wait();
     data.status = MessageProcessStatus.DONE;
