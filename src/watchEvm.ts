@@ -58,9 +58,9 @@ export async function watchEvm(network: keyof typeof NETWORKS) {
           };
         });
         await append(res);
-        start += 500;
-        end += Math.min(start + 500, currentBlock);
-      } while (end < currentBlock);
+        start = end;
+        end = Math.min(start + 500, currentBlock);
+      } while (end <= currentBlock);
     } catch (e) {
       console.error(e);
       captureException(e);

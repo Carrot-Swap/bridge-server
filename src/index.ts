@@ -20,13 +20,17 @@ async function main() {
   });
 
   await database.initialize();
-  await startDispatcher(SEND_MESSAGE());
-  // await watchEvm(47763);
-  // await watchEvm(1);
-  await watchEvm(137);
-  // await watchEvm(56);
-  // await watchEvm(42161);
-  console.log("started", getSignerAddress());
+
+  console.log("start", getSignerAddress());
+
+  await Promise.all([
+    startDispatcher(SEND_MESSAGE()),
+    // await watchEvm(47763);
+    // await watchEvm(1);
+    watchEvm(137),
+    // await watchEvm(56);
+    // await watchEvm(42161);
+  ]);
 }
 
 main().catch((e) => {
