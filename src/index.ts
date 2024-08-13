@@ -25,7 +25,7 @@ async function main() {
 
   await Promise.all([
     startDispatcher(SEND_MESSAGE()),
-    await watchEvm(47763),
+    watchEvm(47763),
     // await watchEvm(1);
     watchEvm(137),
     // await watchEvm(56);
