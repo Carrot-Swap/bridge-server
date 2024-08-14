@@ -8,9 +8,9 @@ import { signMessages } from "./signMessages";
 const messageRepo = getRepository(CrossChainMessage);
 const signatureRepo = getRepository(SignedSignatureEntity);
 
-export async function append(data: BridgeMessage[]) {
+export async function append(data: BridgeMessage[], save?: boolean) {
   const res = data.map((item) => CrossChainMessage.from(item));
-  await Promise.all([signMessagesIfNeed(res), saveMessagesIfNeed(res)]);
+  await Promise.all([signMessagesIfNeed(res), saveMessagesIfNeed(res, save)]);
 }
 
 async function signMessagesIfNeed(res: CrossChainMessage[]) {
@@ -39,8 +39,8 @@ async function signMessagesIfNeed(res: CrossChainMessage[]) {
   await signatureRepo.save(result);
 }
 
-async function saveMessagesIfNeed(res: CrossChainMessage[]) {
-  if (!res.length) {
+async function saveMessagesIfNeed(res: CrossChainMessage[], save?: boolean) {
+  if (!res.length || !save) {
     return;
   }
   const alreadySaved = await messageRepo

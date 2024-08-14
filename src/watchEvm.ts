@@ -11,7 +11,7 @@ import { NETWORKS } from "./constants/networks";
 const SENT_EVENT =
   "0x5b597f6fee9cb6d502de7253fc9d6cd9ca476deb484015b3026c58efbb350b1b";
 
-export async function watchEvm(network: keyof typeof NETWORKS) {
+export async function watchEvm(network: keyof typeof NETWORKS, save = false) {
   const { observeUrls: url } = NETWORKS[network];
   await watch(network, async (startBlockNumber) => {
     if (!startBlockNumber) {
@@ -60,7 +60,7 @@ export async function watchEvm(network: keyof typeof NETWORKS) {
           bridgeParams: bridgeParams,
         };
       });
-      await append(res);
+      await append(res, save);
       return end;
     } catch (e) {
       console.error(e);
