@@ -29,28 +29,28 @@ export async function sendMessage(data: CrossChainMessage, signer: Signer) {
   if (signatures.length < count) {
     return;
   }
-  console.log("try send", data);
-  try {
-    const args = [
-      data.sourceTxHash,
-      data.txSenderAddress,
-      data.sourceChainId,
-      data.destinationAddress,
-      data.message,
-      "0x0000000000000000000000000000000000000000000000000000000000000000",
-      signatures.map((i) => i.data),
-      options[data.destinationChainId] || {},
-    ];
-    await tss.onReceive.staticCall(...args);
-    const estimatedGas = await tss.onReceive.estimateGas(...args);
-    const feeData = await signer.provider.getFeeData();
-    const estimatedTxFee = estimatedGas * feeData.gasPrice;
-    const balance = await signer.provider.getBalance(await signer.getAddress());
-    if (estimatedTxFee > balance) {
-      console.log("Insuffient gas in tss wallet");
-      return;
-    }
+  console.log("try send", data.sourceTxHash);
+  const args = [
+    data.sourceTxHash,
+    data.txSenderAddress,
+    data.sourceChainId,
+    data.destinationAddress,
+    data.message,
+    "0x0000000000000000000000000000000000000000000000000000000000000000",
+    signatures.map((i) => i.data),
+    options[data.destinationChainId] || {},
+  ];
+  await tss.onReceive.staticCall(...args);
+  const estimatedGas = await tss.onReceive.estimateGas(...args);
+  const feeData = await signer.provider.getFeeData();
+  const estimatedTxFee = estimatedGas * feeData.gasPrice;
+  const balance = await signer.provider.getBalance(await signer.getAddress());
+  if (estimatedTxFee > balance) {
+    console.log("Insuffient gas in tss wallet");
+    return;
+  }
 
+  try {
     const tx = await tss.onReceive(...args);
     data.destinationTxHash = tx.hash;
     await tx.wait();

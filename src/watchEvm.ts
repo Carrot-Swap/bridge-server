@@ -25,7 +25,7 @@ export async function watchEvm(network: keyof typeof NETWORKS, save = false) {
     const currentBlock = await provider.getBlockNumber();
     const start = startBlockNumber;
     const end = Math.min(start + 500, currentBlock);
-    console.log(`[${network}]: ${start} ~ ${end}`);
+    // console.log(`[${network}]: ${start} ~ ${end}`);
     try {
       const logs = await provider.getLogs({
         fromBlock: start,
