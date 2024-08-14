@@ -12,7 +12,7 @@ const SENT_EVENT =
   "0x5b597f6fee9cb6d502de7253fc9d6cd9ca476deb484015b3026c58efbb350b1b";
 
 export async function watchEvm(network: keyof typeof NETWORKS) {
-  const { url } = NETWORKS[network];
+  const { observeUrls: url } = NETWORKS[network];
   await watch(network, async (startBlockNumber) => {
     if (!startBlockNumber) {
       return startBlockNumber;

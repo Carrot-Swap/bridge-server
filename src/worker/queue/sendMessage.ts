@@ -31,7 +31,7 @@ export async function sendMessage(data: CrossChainMessage, signer: Signer) {
   }
   console.log("try send", data);
   try {
-    const tx = await tss.send(
+    const args = [
       data.sourceTxHash,
       data.txSenderAddress,
       data.sourceChainId,
@@ -39,11 +39,22 @@ export async function sendMessage(data: CrossChainMessage, signer: Signer) {
       data.message,
       "0x0000000000000000000000000000000000000000000000000000000000000000",
       signatures.map((i) => i.data),
-      options[data.destinationChainId] || {}
-    );
+      options[data.destinationChainId] || {},
+    ];
+    await tss.onReceive.staticCall(...args);
+    const estimatedGas = await tss.onReceive.estimateGas(...args);
+    const feeData = await signer.provider.getFeeData();
+    const estimatedTxFee = estimatedGas * feeData.gasPrice;
+    const balance = await signer.provider.getBalance(await signer.getAddress());
+    if (estimatedTxFee > balance) {
+      console.log("Insuffient gas in tss wallet");
+      return;
+    }
+
+    const tx = await tss.onReceive(...args);
+    data.destinationTxHash = tx.hash;
     await tx.wait();
     data.status = MessageProcessStatus.DONE;
-    data.destinationTxHash = tx.hash;
     console.log("sent");
     await messageRepo.save(data);
     return data;

@@ -1,7 +1,7 @@
 import { RECEIVE_VERIFY_SIGNATURE_ABI } from "abis";
 import { RECEVIE_VERIFY_SIGNATURE_ADDRESS } from "constants/addresses";
 import { getSigner } from "constants/env";
-import { NETWORKS } from "constants/networks";
+import { ChainId, NETWORKS } from "constants/networks";
 import { CrossChainMessage } from "entites/message.entity";
 import { SignedSignatureEntity } from "entites/signed-signature.entity";
 import { ethers, getBytes } from "ethers";
@@ -14,8 +14,8 @@ export async function signMessages(messages: CrossChainMessage[]) {
 
   const res = await Promise.all(
     messages.map(async (i) => {
-      const { url } = NETWORKS[i.destinationChainId];
-      const signer = getSigner(url, Number(i.destinationChainId));
+      const { observeUrls } = NETWORKS[Number(i.destinationChainId) as ChainId];
+      const signer = getSigner(observeUrls, Number(i.destinationChainId));
       const contract = new ethers.Contract(
         RECEVIE_VERIFY_SIGNATURE_ADDRESS[i.destinationChainId],
         RECEIVE_VERIFY_SIGNATURE_ABI,

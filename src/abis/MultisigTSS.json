@@ -85,9 +85,9 @@
   {
     "inputs": [
       {
-        "internalType": "address",
+        "internalType": "string",
         "name": "sourceTxHash",
-        "type": "address"
+        "type": "string"
       },
       {
         "internalType": "address",
