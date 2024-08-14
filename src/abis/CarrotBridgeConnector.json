@@ -372,7 +372,36 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "txSenderAddress",
+        "name": "sourceTxHash",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "sourceChainId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getMessageHash",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "sourceTxHash",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "bridgeTxSenderAddress",
         "type": "address"
       },
       {
@@ -405,7 +434,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "txSenderAddress",
+        "name": "sourceTxHash",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "bridgeTxSenderAddress",
         "type": "address"
       },
       {
@@ -467,6 +501,25 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "processed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",

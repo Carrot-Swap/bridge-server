@@ -3,6 +3,7 @@ import { MULTISIG_TSS_ADDRESS } from "constants/addresses";
 import { CrossChainMessage } from "entites/message.entity";
 import { SignedSignatureEntity } from "entites/signed-signature.entity";
 import { Signer, ethers } from "ethers";
+import { uniqBy } from "lodash";
 import { getRepository } from "remotes/database";
 import { MessageProcessStatus } from "types/MessageProcessStatus";
 
@@ -14,28 +15,31 @@ const options = {
 };
 
 export async function sendMessage(data: CrossChainMessage, signer: Signer) {
-  try {
-    const tss = new ethers.Contract(
-      MULTISIG_TSS_ADDRESS[data.destinationChainId],
-      MULTISIG_TSS_ABI,
-      signer
-    );
-    const signatures = await signatureRepo.find({
+  const tss = new ethers.Contract(
+    MULTISIG_TSS_ADDRESS[data.destinationChainId],
+    MULTISIG_TSS_ABI,
+    signer
+  );
+  const signatures = await signatureRepo
+    .find({
       where: { sourceTxHash: data.sourceTxHash },
-    });
-    const count = await tss.tssSignerCount();
-    if (signatures.length < count) {
-      return;
-    }
-    console.log("try send", data);
+    })
+    .then((res) => uniqBy(res, (i) => i.signer));
+  const count = await tss.tssSignerCount();
+  if (signatures.length < count) {
+    return;
+  }
+  console.log("try send", data);
+  try {
     const tx = await tss.send(
+      data.sourceTxHash,
       data.txSenderAddress,
       data.sourceChainId,
       data.destinationAddress,
       data.message,
       "0x0000000000000000000000000000000000000000000000000000000000000000",
       signatures.map((i) => i.data),
-      options[data.destinationChainId]
+      options[data.destinationChainId] || {}
     );
     await tx.wait();
     data.status = MessageProcessStatus.DONE;

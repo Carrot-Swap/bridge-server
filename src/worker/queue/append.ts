@@ -1,3 +1,4 @@
+import { getSignerAddress } from "constants/env";
 import { CrossChainMessage } from "entites/message.entity";
 import { SignedSignatureEntity } from "entites/signed-signature.entity";
 import { getRepository } from "remotes/database";
@@ -9,7 +10,50 @@ const signatureRepo = getRepository(SignedSignatureEntity);
 
 export async function append(data: BridgeMessage[]) {
   const res = data.map((item) => CrossChainMessage.from(item));
-  const signed = await signMessages(res);
-  await signatureRepo.save(signed);
-  messageRepo.save(res);
+  await Promise.all([signMessagesIfNeed(res), saveMessagesIfNeed(res)]);
+}
+
+async function signMessagesIfNeed(res: CrossChainMessage[]) {
+  if (!res.length) {
+    return;
+  }
+  const alreadySigned = await signatureRepo
+    .createQueryBuilder("signed_signature")
+    .select()
+    .where("signed_signature.source_tx_hash = (:...txs)", {
+      txs: res.map((i) => i.sourceTxHash),
+    })
+    .andWhere("signed_signature.signer = (:signer)", {
+      signer: getSignerAddress(),
+    })
+    .getMany()
+    .then((i) => i.map((i) => i.sourceTxHash));
+
+  const signTargets = res.filter(
+    (t) => !alreadySigned.includes(t.sourceTxHash)
+  );
+  if (!signTargets.length) {
+    return;
+  }
+  const result = await signMessages(signTargets);
+  await signatureRepo.save(result);
+}
+
+async function saveMessagesIfNeed(res: CrossChainMessage[]) {
+  if (!res.length) {
+    return;
+  }
+  const alreadySaved = await messageRepo
+    .createQueryBuilder("cross_chain_message")
+    .select()
+    .where("cross_chain_message.source_tx_hash = (:...txs)", {
+      txs: res.map((i) => i.sourceTxHash),
+    })
+    .getMany()
+    .then((i) => i.map((i) => i.sourceTxHash));
+
+  const saveTargets = res.filter((t) => !alreadySaved.includes(t.sourceTxHash));
+  if (saveTargets.length) {
+    messageRepo.save(saveTargets);
+  }
 }

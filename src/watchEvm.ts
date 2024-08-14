@@ -14,58 +14,58 @@ const SENT_EVENT =
 export async function watchEvm(network: keyof typeof NETWORKS) {
   const { url } = NETWORKS[network];
   await watch(network, async (startBlockNumber) => {
-    const provider = new ResilientRpcProvider(url, network);
+    if (!startBlockNumber) {
+      return startBlockNumber;
+    }
+    const provider = new ResilientRpcProvider(url, network, true);
     const contract = new ethers.Contract(
       CONNECTOR_ADDRESS[network],
       CONNECTOR_ABI
     );
     const currentBlock = await provider.getBlockNumber();
-    let start = startBlockNumber;
-    let end = Math.min(start + 500, currentBlock);
+    const start = startBlockNumber;
+    const end = Math.min(start + 500, currentBlock);
+    console.log(`[${network}]: ${start} ~ ${end}`);
     try {
-      do {
-        const logs = await provider.getLogs({
-          fromBlock: start,
-          toBlock: end,
-          address: [CONNECTOR_ADDRESS[network]],
-          topics: [SENT_EVENT],
-        });
-        const res: BridgeMessage[] = logs.map((log) => {
-          const [
-            sourceTxOriginAddress,
-            bridgeTxSenderAddress,
-            destinationChainId,
-            destinationAddress,
-            destinationGasLimit,
-            message,
-            bridgeParams,
-          ] = contract.interface.decodeEventLog(
-            "BridgeMessageSent",
-            log.data,
-            log.topics
-          );
+      const logs = await provider.getLogs({
+        fromBlock: start,
+        toBlock: end,
+        address: [CONNECTOR_ADDRESS[network]],
+        topics: [SENT_EVENT],
+      });
+      const res: BridgeMessage[] = logs.map((log) => {
+        const [
+          sourceTxOriginAddress,
+          bridgeTxSenderAddress,
+          destinationChainId,
+          destinationAddress,
+          destinationGasLimit,
+          message,
+          bridgeParams,
+        ] = contract.interface.decodeEventLog(
+          "BridgeMessageSent",
+          log.data,
+          log.topics
+        );
 
-          return {
-            txHash: log.transactionHash,
-            sourceChainId: network,
-            txOriginAddress: sourceTxOriginAddress,
-            txSenderAddress: bridgeTxSenderAddress,
-            destinationChainId: destinationChainId,
-            destinationAddress: destinationAddress,
-            destinationGasLimit: destinationGasLimit,
-            message: message,
-            bridgeParams: bridgeParams,
-          };
-        });
-        await append(res);
-        start = end;
-        end = Math.min(start + 500, currentBlock);
-      } while (end <= currentBlock);
+        return {
+          txHash: log.transactionHash,
+          sourceChainId: network,
+          txOriginAddress: sourceTxOriginAddress,
+          txSenderAddress: bridgeTxSenderAddress,
+          destinationChainId: destinationChainId,
+          destinationAddress: destinationAddress,
+          destinationGasLimit: destinationGasLimit,
+          message: message,
+          bridgeParams: bridgeParams,
+        };
+      });
+      await append(res);
+      return end;
     } catch (e) {
       console.error(e);
       captureException(e);
-    } finally {
-      return start;
+      return startBlockNumber;
     }
   });
 }

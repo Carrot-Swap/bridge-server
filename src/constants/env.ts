@@ -17,7 +17,7 @@ export function getSigner(url: string[], chainId: number) {
   if (instances[chainId]) {
     return instances[chainId];
   }
-  const provider = new ResilientRpcProvider(url, chainId);
+  const provider = new ResilientRpcProvider(url, chainId, true);
   const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
   instances[chainId] = signer;
   return signer;

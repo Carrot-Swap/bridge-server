@@ -15,7 +15,7 @@ export const NETWORKS = {
   137: {
     url: [
       // "https://polygon.drpc.org",
-      "https://polygon.llamarpc.com",
+      // "https://polygon.llamarpc.com",
       "https://polygon-pokt.nodies.app",
     ],
     name: "Polygon",
