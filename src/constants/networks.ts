@@ -50,6 +50,7 @@ export const NETWORKS: Record<ChainId, ChainInfo> = {
       "https://bsc.rpc.blxrbdn.com",
     ],
     signUrls: [
+      "https://bsc.publicnode.com",
       "https://binance.llamarpc.com",
       "https://bsc-pokt.nodies.app",
       "https://bsc.rpc.blxrbdn.com",
