@@ -17,6 +17,7 @@ export class CrossChainMessage {
     row.bridgeParams = item.bridgeParams;
     row.status = item.status ?? MessageProcessStatus.PENDING;
     row.destinationTxHash = item.destinationTxHash;
+    row.time = new Date();
     return row;
   }
 
@@ -52,4 +53,7 @@ export class CrossChainMessage {
 
   @Column({})
   status: MessageProcessStatus;
+
+  @Column({ nullable: true })
+  time: Date;
 }
