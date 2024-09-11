@@ -1,10 +1,12 @@
 import { ChainId, NETWORKS } from "constants/networks";
 import { MessageProcessStatus } from "types/MessageProcessStatus";
-import { startJob } from "utils/starJob";
 import { getSigner } from "../../constants";
 import { CrossChainMessage } from "../../entites";
 import { getRepository } from "../../remotes";
 import { sendMessage } from "./sendMessage";
+import { startJob } from "utils/starJob";
+import { lookupChargeGasRequests } from "remotes/carrot/charge-gas";
+import { checkAndSendGas } from "./checkAndSendGas";
 
 const messageRepo = getRepository(CrossChainMessage);
 
@@ -18,7 +20,12 @@ export async function startDispatcher(
   await Promise.all(chainIds.map((id) => startJob(() => start(id))));
 }
 
-const start = async (chainId: keyof typeof NETWORKS) => {
+export const start = async (chainId: keyof typeof NETWORKS) => {
+  if (chainId === ChainId.NEOX) {
+    const list = await lookupChargeGasRequests();
+    await checkAndSendGas(list).catch();
+  }
+
   const targets = await messageRepo.find({
     where: {
       status: MessageProcessStatus.PENDING,

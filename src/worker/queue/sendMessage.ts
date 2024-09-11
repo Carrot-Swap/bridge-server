@@ -44,7 +44,8 @@ export async function sendMessage(data: CrossChainMessage, signer: Signer) {
   const estimatedGas = await tss.onReceive.estimateGas(...args);
   const feeData = await signer.provider.getFeeData();
   const estimatedTxFee = estimatedGas * feeData.gasPrice;
-  const balance = await signer.provider.getBalance(await signer.getAddress());
+  const signerAddress = await signer.getAddress();
+  const balance = await signer.provider.getBalance(signerAddress);
   if (estimatedTxFee > balance) {
     console.log("Insuffient gas in tss wallet");
     return;

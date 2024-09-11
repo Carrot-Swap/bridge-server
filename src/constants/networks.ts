@@ -2,8 +2,9 @@ export enum ChainId {
   NEOX = 47763,
   POLYGON = 137,
   BSC = 56,
-  ARBITRUM = 42161,
+  ARBITRUM = 421611,
   ETHEREUM = 1,
+  BASE = 8453,
 }
 
 interface ChainInfo {
@@ -15,8 +16,11 @@ interface ChainInfo {
 export const NETWORKS: Record<ChainId, ChainInfo> = {
   47763: {
     name: "Neo X",
-    observeUrls: [`https://mainnet-1.rpc.banelabs.org`],
-    signUrls: [`https://mainnet-1.rpc.banelabs.org`],
+    observeUrls: [
+      `https://mainnet-1.rpc.banelabs.org`,
+      "https://mainnet-2.rpc.banelabs.org/",
+    ],
+    signUrls: [`https://mainnet-3.rpc.banelabs.org/`],
   },
   1: {
     name: "Ethereum",
@@ -56,7 +60,7 @@ export const NETWORKS: Record<ChainId, ChainInfo> = {
       "https://bsc.rpc.blxrbdn.com",
     ],
   },
-  42161: {
+  421611: {
     observeUrls: [
       `https://arb1.arbitrum.io/rpc`,
       "https://arbitrum.llamarpc.com",
@@ -70,5 +74,22 @@ export const NETWORKS: Record<ChainId, ChainInfo> = {
       "https://rpc.ankr.com/arbitrum",
     ],
     name: "Arbitrum One",
+  },
+  [ChainId.BASE]: {
+    observeUrls: [
+      `https://mainnet.base.org`,
+      "https://base.llamarpc.com",
+      "https://developer-access-mainnet.base.org",
+      "https://base.blockpi.network/v1/rpc/public",
+      "https://1rpc.io/base",
+    ],
+    signUrls: [
+      `https://mainnet.base.org`,
+      "https://base.llamarpc.com",
+      "https://developer-access-mainnet.base.org",
+      "https://base.blockpi.network/v1/rpc/public",
+      "https://1rpc.io/base",
+    ],
+    name: "BASE",
   },
 };
