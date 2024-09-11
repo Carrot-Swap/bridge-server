@@ -2,7 +2,7 @@ export enum ChainId {
   NEOX = 47763,
   POLYGON = 137,
   BSC = 56,
-  ARBITRUM = 421611,
+  ARBITRUM = 42161,
   ETHEREUM = 1,
   BASE = 8453,
 }
@@ -60,7 +60,7 @@ export const NETWORKS: Record<ChainId, ChainInfo> = {
       "https://bsc.rpc.blxrbdn.com",
     ],
   },
-  421611: {
+  [ChainId.ARBITRUM]: {
     observeUrls: [
       `https://arb1.arbitrum.io/rpc`,
       "https://arbitrum.llamarpc.com",
