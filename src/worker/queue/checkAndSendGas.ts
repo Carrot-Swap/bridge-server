@@ -40,7 +40,7 @@ export async function checkAndSendGas(list: ChargeGas[]) {
       return;
     }
     const payAmountInUSD = eth * price;
-    if (!payAmountInUSD) {
+    if (!payAmountInUSD || payAmountInUSD < 0.5) {
       return;
     }
     const gasAmount = formatDecimals(payAmountInUSD / (gasPrice * 1.05), 9);
