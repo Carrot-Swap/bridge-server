@@ -44,6 +44,10 @@ export async function checkAndSendGas(list: ChargeGas[]) {
       return;
     }
     const gasAmount = formatDecimals(payAmountInUSD / (gasPrice * 1.05), 9);
+    const balance = await signer.provider.getBalance(signer.address);
+    if (Number(formatEther(balance)) < 2) {
+      return;
+    }
     console.log(`sending ${gasAmount} $GAS`);
     const feeData = await signer.provider.getFeeData();
     const processedTx = await signer.sendTransaction({
