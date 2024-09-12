@@ -6,6 +6,7 @@ import { startDispatcher } from "worker/queue";
 import { database } from "./remotes";
 import { getSignerAddress } from "constants/env";
 import { SEND_MESSAGE } from "./env";
+import { ChainId } from "constants/networks";
 
 require("dotenv").config({ path: join(__dirname, "../.env") });
 
@@ -28,6 +29,7 @@ async function main() {
     watchEvm(47763, SEND_MESSAGE()),
     watchEvm(56, SEND_MESSAGE()),
     watchEvm(137, SEND_MESSAGE()),
+    watchEvm(ChainId.ARBITRUM, SEND_MESSAGE()),
     // await watchEvm(1);
     // await watchEvm(42161);
   ]);
