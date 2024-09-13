@@ -25,7 +25,10 @@ async function main() {
   console.log("start", getSignerAddress());
 
   await Promise.all([
-    startDispatcher([47763, 137, 56, ChainId.ARBITRUM], SEND_MESSAGE()),
+    startDispatcher(
+      [47763, 137, 56, ChainId.ARBITRUM, ChainId.BASE],
+      SEND_MESSAGE()
+    ),
     watchEvm(47763, SEND_MESSAGE()),
     watchEvm(56, SEND_MESSAGE()),
     watchEvm(137, SEND_MESSAGE()),
