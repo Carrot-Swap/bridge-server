@@ -30,6 +30,7 @@ async function main() {
     watchEvm(56, SEND_MESSAGE()),
     watchEvm(137, SEND_MESSAGE()),
     watchEvm(ChainId.ARBITRUM, SEND_MESSAGE()),
+    watchEvm(ChainId.BASE, SEND_MESSAGE()),
     // await watchEvm(1);
     // await watchEvm(42161);
   ]);
