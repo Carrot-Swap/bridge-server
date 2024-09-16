@@ -26,7 +26,7 @@ async function main() {
 
   await Promise.all([
     startDispatcher(
-      [47763, 137, 56, ChainId.ARBITRUM, ChainId.BASE],
+      [47763, 137, 56, ChainId.ARBITRUM, ChainId.BASE, ChainId.ETHEREUM],
       SEND_MESSAGE()
     ),
     watchEvm(47763, SEND_MESSAGE()),
@@ -34,6 +34,7 @@ async function main() {
     watchEvm(137, SEND_MESSAGE()),
     watchEvm(ChainId.ARBITRUM, SEND_MESSAGE()),
     watchEvm(ChainId.BASE, SEND_MESSAGE()),
+    watchEvm(ChainId.ETHEREUM, SEND_MESSAGE()),
     // await watchEvm(1);
     // await watchEvm(42161);
   ]);
