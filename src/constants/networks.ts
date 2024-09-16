@@ -25,16 +25,24 @@ export const NETWORKS: Record<ChainId, ChainInfo> = {
   1: {
     name: "Ethereum",
     observeUrls: [
+      "https://ethereum.rpc.thirdweb.com/",
+      "https://eth-mainnet.blastapi.io/b2ba308a-2b28-49dd-9994-6e8dc92b5a6d",
       "https://eth.llamarpc.com",
-      "https://virginia.rpc.blxrbdn.com",
-      "https://ethereum-mainnet.gateway.tatum.io",
       "https://uk.rpc.blxrbdn.com",
+      "https://eth.rpc.blxrbdn.com",
+      "https://eth-mainnet.public.blastapi.io",
+      "https://cloudflare-eth.com",
+      "https://eth.merkle.io",
     ],
     signUrls: [
+      "https://ethereum.rpc.thirdweb.com/",
+      "https://eth-mainnet.blastapi.io/b2ba308a-2b28-49dd-9994-6e8dc92b5a6d",
       "https://eth.llamarpc.com",
-      "https://virginia.rpc.blxrbdn.com",
-      "https://ethereum-mainnet.gateway.tatum.io",
       "https://uk.rpc.blxrbdn.com",
+      "https://eth.rpc.blxrbdn.com",
+      "https://eth-mainnet.public.blastapi.io",
+      "https://cloudflare-eth.com",
+      "https://eth.merkle.io",
     ],
   },
   137: {
