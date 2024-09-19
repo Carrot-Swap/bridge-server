@@ -32,6 +32,7 @@ async function signMessagesIfNeed(res: CrossChainMessage[]) {
   const signTargets = res.filter(
     (t) => !alreadySigned.includes(t.sourceTxHash)
   );
+  console.log("signTargets : ", signTargets.length);
   if (!signTargets.length) {
     return;
   }
