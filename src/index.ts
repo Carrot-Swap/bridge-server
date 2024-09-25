@@ -7,6 +7,7 @@ import { database } from "./remotes";
 import { getSignerAddress } from "constants/env";
 import { SEND_MESSAGE } from "./env";
 import { ChainId } from "constants/networks";
+import { startAnomalyMonitor } from "worker/annomalyMonitor";
 
 require("dotenv").config({ path: join(__dirname, "../.env") });
 
@@ -35,6 +36,7 @@ async function main() {
     watchEvm(ChainId.ARBITRUM, SEND_MESSAGE()),
     watchEvm(ChainId.BASE, SEND_MESSAGE()),
     watchEvm(ChainId.ETHEREUM, SEND_MESSAGE()),
+    startAnomalyMonitor(),
     // await watchEvm(1);
     // await watchEvm(42161);
   ]);
