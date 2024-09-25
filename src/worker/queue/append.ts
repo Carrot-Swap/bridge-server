@@ -4,6 +4,7 @@ import { SignedSignatureEntity } from "entites/signed-signature.entity";
 import { getRepository } from "remotes/database";
 import { BridgeMessage } from "types/BridgeMessage";
 import { signMessages } from "./signMessages";
+import { sendSlackNotify } from "remotes/slack";
 
 const messageRepo = getRepository(CrossChainMessage);
 const signatureRepo = getRepository(SignedSignatureEntity);
@@ -39,6 +40,12 @@ async function signMessagesIfNeed(res: CrossChainMessage[]) {
   }
   const result = await signMessages(signTargets);
   await signatureRepo.save(result);
+
+  sendSlackNotify(
+    `[${getSignerAddress()}] Sign Message ${result
+      .map((i) => i.sourceTxHash)
+      .join()}`
+  );
 }
 
 async function saveMessagesIfNeed(res: CrossChainMessage[], save?: boolean) {

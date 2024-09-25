@@ -1,7 +1,8 @@
 import { subMinutes } from "date-fns";
 import { CrossChainMessage } from "entites/index";
+import { format } from "date-fns";
 import { sendSlackNotify } from "remotes/slack";
-import { getRepository } from "typeorm";
+import { getRepository } from "remotes/database";
 import { startJob } from "utils/starJob";
 
 const messageRepo = getRepository(CrossChainMessage);
@@ -14,11 +15,11 @@ export async function startAnomalyMonitor() {
       .select()
       .where("cross_chain_message.status = 1")
       .andWhere("cross_chain_message.time < (:time)", {
-        time: subMinutes(new Date(), 5),
+        time: format(subMinutes(new Date(), 5), "yyyy-MM-dd HH:mm:ss"),
       })
       .getCount();
     if (count > 0) {
-      await sendSlackNotify("Bridge Server 이상 발생");
+      await sendSlackNotify("Bridge Server 이상 발생", true);
     }
   }, 30000);
 }

@@ -5,6 +5,7 @@ import { SignedSignatureEntity } from "entites/signed-signature.entity";
 import { Signer, ethers } from "ethers";
 import { uniqBy } from "lodash";
 import { getRepository } from "remotes/database";
+import { sendSlackNotify } from "remotes/slack";
 import { MessageProcessStatus } from "types/MessageProcessStatus";
 
 const messageRepo = getRepository(CrossChainMessage);
@@ -30,6 +31,7 @@ export async function sendMessage(data: CrossChainMessage, signer: Signer) {
     return;
   }
   console.log("try send", data.sourceTxHash);
+  sendSlackNotify(`try send ${data.sourceTxHash}`);
   const args = [
     data.sourceTxHash,
     data.txSenderAddress,
@@ -48,6 +50,7 @@ export async function sendMessage(data: CrossChainMessage, signer: Signer) {
   const balance = await signer.provider.getBalance(signerAddress);
   if (estimatedTxFee > balance) {
     console.log("Insuffient gas in tss wallet");
+    sendSlackNotify(`Insuffient gas in tss wallet`, true);
     return;
   }
 
@@ -58,6 +61,7 @@ export async function sendMessage(data: CrossChainMessage, signer: Signer) {
     data.status = MessageProcessStatus.DONE;
     console.log("sent");
     await messageRepo.save(data);
+    sendSlackNotify(`sent ${tx.hash}`);
     return data;
   } catch (e) {
     console.error(e);
@@ -71,6 +75,7 @@ export async function sendMessage(data: CrossChainMessage, signer: Signer) {
     // Sentry.captureException(e);
     data.status = MessageProcessStatus.FAIL;
     await messageRepo.save(data);
+    sendSlackNotify(`Error sending tx ${JSON.stringify(e)}`, true);
     return data;
   }
 }
