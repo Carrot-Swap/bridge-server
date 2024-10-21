@@ -1,13 +1,13 @@
 import * as Sentry from "@sentry/node";
 import { ProfilingIntegration } from "@sentry/profiling-node";
+import { getSignerAddress } from "constants/env";
+import { ChainId } from "constants/networks";
 import { join } from "path";
 import { watchEvm } from "watchEvm";
-import { startDispatcher } from "worker/queue";
-import { database } from "./remotes";
-import { getSignerAddress } from "constants/env";
-import { SEND_MESSAGE } from "./env";
-import { ChainId } from "constants/networks";
 import { startAnomalyMonitor } from "worker/annomalyMonitor";
+import { startDispatcher } from "worker/queue";
+import { SEND_MESSAGE } from "./env";
+import { database } from "./remotes";
 
 require("dotenv").config({ path: join(__dirname, "../.env") });
 

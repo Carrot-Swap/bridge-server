@@ -19,5 +19,5 @@ export async function watch(
     cache.id = `${getSignerAddress()}_${network}`;
     cache.block = startBlockNumber;
     await repo.save(cache);
-  });
+  }, 10000);
 }
