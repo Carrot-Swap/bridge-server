@@ -16,6 +16,7 @@ const SYMBOL_MAP = {
   GAS: "GASUSDT",
   WGAS: "GASUSDT",
   WGAS10: "GASUSDT",
+  POL: "POLUSDT",
 };
 
 export async function fetchCEXPrices() {
