@@ -25,7 +25,7 @@ async function signMessagesIfNeed(res: CrossChainMessage[]) {
   const alreadySigned = await signatureRepo
     .createQueryBuilder("signed_signature")
     .select()
-    .where("signed_signature.source_tx_hash = (:...txs)", {
+    .where("signed_signature.source_tx_hash in (:...txs)", {
       txs: res.map((i) => i.sourceTxHash),
     })
     .andWhere("signed_signature.signer = (:signer)", {
@@ -58,7 +58,7 @@ async function saveMessagesIfNeed(res: CrossChainMessage[], save?: boolean) {
   const alreadySaved = await messageRepo
     .createQueryBuilder("cross_chain_message")
     .select()
-    .where("cross_chain_message.source_tx_hash = (:...txs)", {
+    .where("cross_chain_message.source_tx_hash in (:...txs)", {
       txs: res.map((i) => i.sourceTxHash),
     })
     .getMany()
