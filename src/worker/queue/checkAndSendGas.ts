@@ -44,7 +44,7 @@ export async function checkAndSendGas(list: ChargeGas[]) {
         continue;
       }
       const payAmountInUSD = eth * price;
-      if (!payAmountInUSD || payAmountInUSD < 0.5 || payAmountInUSD > 30) {
+      if (!payAmountInUSD || payAmountInUSD < 0.5 || payAmountInUSD > 100) {
         sendSlackNotify("reject 4");
         continue;
       }
