@@ -24,7 +24,7 @@ export async function checkAndSendGas(list: ChargeGas[]) {
       continue;
     }
     if (excludes.includes(item.txHash)) {
-      return;
+      continue;
     }
     try {
       sendSlackNotify(`try charge gas : ${JSON.stringify(item)}`);
