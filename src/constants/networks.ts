@@ -18,9 +18,13 @@ export const NETWORKS: Record<ChainId, ChainInfo> = {
     name: "Neo X",
     observeUrls: [
       `https://mainnet-1.rpc.banelabs.org`,
-      "https://mainnet-2.rpc.banelabs.org/",
+      "https://mainnet-2.rpc.banelabs.org",
     ],
-    signUrls: [`https://mainnet-3.rpc.banelabs.org/`],
+    signUrls: [
+      `https://mainnet-1.rpc.banelabs.org`,
+      "https://mainnet-2.rpc.banelabs.org",
+      `https://mainnet-3.rpc.banelabs.org`,
+    ],
   },
   1: {
     name: "Ethereum",

@@ -32,7 +32,11 @@ export class ResilientRpcProvider extends JsonRpcProvider {
    * @param chainId Chain Id of the network
    * @param loggingEnabled Flag indicating if logging is enabled.
    */
-  constructor(rpcUrls: string[], chainId: number, loggingEnabled = false) {
+  constructor(
+    public rpcUrls: string[],
+    chainId: number,
+    loggingEnabled = false
+  ) {
     // Initialize the super class with the first RPC url.
     super(rpcUrls[0], chainId);
 
