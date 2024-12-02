@@ -35,6 +35,7 @@ export const start = async (chainId: keyof typeof NETWORKS) => {
   if (!targets.length) {
     return;
   }
+  console.log("targets", chainId, targets.length);
   for (const item of targets) {
     const { signUrls } = NETWORKS[Number(item.destinationChainId) as ChainId];
     const signer = getSigner(signUrls, Number(item.destinationChainId));

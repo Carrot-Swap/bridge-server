@@ -21,9 +21,9 @@ export const NETWORKS: Record<ChainId, ChainInfo> = {
       "https://mainnet-2.rpc.banelabs.org",
     ],
     signUrls: [
-      `https://mainnet-1.rpc.banelabs.org`,
-      "https://mainnet-2.rpc.banelabs.org",
       `https://mainnet-3.rpc.banelabs.org`,
+      "https://mainnet-2.rpc.banelabs.org",
+      `https://mainnet-1.rpc.banelabs.org`,
     ],
   },
   1: {
